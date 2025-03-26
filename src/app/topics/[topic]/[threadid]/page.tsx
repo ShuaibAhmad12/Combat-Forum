@@ -5,8 +5,13 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { ThumbsUp, MessageSquare, Flag, Share2 } from "lucide-react"
 import ReplyForm from "@/components/reply-form"
-
-export default function ThreadPage({ params }: { params: { topic: string; threadId: string } }) {
+interface ThreadPageProps {
+  params: {
+    topic: string;
+    threadId: string;
+  };
+}
+export default function ThreadPage({ params }: ThreadPageProps) {
   const topic = params.topic.replace(/-/g, " ")
   const formattedTopic = topic
     .split(" ")
