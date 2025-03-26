@@ -1,103 +1,151 @@
-import Image from "next/image";
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Shield, Users, MessageSquare, TrendingUp, Dumbbell } from "lucide-react"
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="container mx-auto px-4 py-8">
+      <section className="py-12 md:py-16 lg:py-20">
+        <div className="container px-4 md:px-6">
+          <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl">
+                Martial Arts Discussion Forum
+              </h1>
+              <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
+                Join the community to discuss techniques, share experiences, and connect with martial artists from
+                around the world.
+              </p>
+            </div>
+            <div className="space-x-4">
+              <Link href="/topics">
+                <Button size="lg">Browse Topics</Button>
+              </Link>
+              <Link href="/auth/signup">
+                <Button variant="outline" size="lg">
+                  Sign Up
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </section>
+
+      <section className="py-12 md:py-16">
+        <div className="container px-4 md:px-6">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <Card>
+              <CardHeader className="flex flex-row items-center gap-4">
+                <Shield className="h-8 w-8 text-primary" />
+                <div className="grid gap-1">
+                  <CardTitle>Multiple Disciplines</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p>Explore discussions on MMA, Taekwondo, Jiu-Jitsu, Judo, Boxing, and more.</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center gap-4">
+                <Users className="h-8 w-8 text-primary" />
+                <div className="grid gap-1">
+                  <CardTitle>Active Community</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p>Connect with practitioners, coaches, and enthusiasts from around the world.</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center gap-4">
+                <MessageSquare className="h-8 w-8 text-primary" />
+                <div className="grid gap-1">
+                  <CardTitle>Engaging Discussions</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p>Start threads, share insights, and participate in meaningful conversations.</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-12 md:py-16 bg-muted/50 rounded-lg">
+        <div className="container px-4 md:px-6">
+          <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Popular Topics</h2>
+              <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
+                Explore our most active discussion categories
+              </p>
+            </div>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mt-8">
+            {[
+              {
+                name: "MMA",
+                icon: <TrendingUp className="h-8 w-8" />,
+                threads: 324,
+                color: "bg-red-100 dark:bg-red-900/20",
+              },
+              {
+                name: "Brazilian Jiu-Jitsu",
+                icon: <Shield className="h-8 w-8" />,
+                threads: 256,
+                color: "bg-blue-100 dark:bg-blue-900/20",
+              },
+              {
+                name: "Boxing",
+                icon: <Dumbbell className="h-8 w-8" />,
+                threads: 198,
+                color: "bg-yellow-100 dark:bg-yellow-900/20",
+              },
+              {
+                name: "Taekwondo",
+                icon: <Shield className="h-8 w-8" />,
+                threads: 145,
+                color: "bg-green-100 dark:bg-green-900/20",
+              },
+            ].map((topic, i) => (
+              <Link key={i} href={`/topics/${topic.name.toLowerCase().replace(/\s+/g, "-")}`}>
+                <Card className={`hover:shadow-md transition-shadow ${topic.color}`}>
+                  <CardHeader>
+                    <div className="flex items-center gap-2">
+                      {topic.icon}
+                      <CardTitle>{topic.name}</CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardFooter>
+                    <p className="text-sm text-muted-foreground">{topic.threads} threads</p>
+                  </CardFooter>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-12 md:py-16">
+        <div className="container px-4 md:px-6">
+          <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">Join Our Community Today</h2>
+              <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
+                Create an account to participate in discussions, share your knowledge, and connect with fellow martial
+                artists.
+              </p>
+            </div>
+            <div className="space-x-4">
+              <Link href="/auth/signup">
+                <Button size="lg">Sign Up Now</Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
-  );
+  )
 }
+
