@@ -1,86 +1,50 @@
+"use client"
+
 import Link from "next/link"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { MessageSquare, Eye, ThumbsUp } from "lucide-react"
+import { MessageSquare, Eye, ThumbsUp } from 'lucide-react'
+import { useQuery } from "convex/react"
+import { api } from "../../../../convex/_generated/api"
+import {formatDistanceToNow} from "date-fns/formatDistanceToNow"
+import { useUser } from "@clerk/clerk-react"
+import { useState, useEffect } from "react"
+import { Id } from "../../../../convex/_generated/dataModel"
 
 export default function TopicPage({ params }: { params: { topic: string } }) {
-  const topic = params.topic.replace(/-/g, " ")
-  const formattedTopic = topic
-    .split(" ")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ")
-
-  // This would come from a database in a real application
-  const threads = [
-    {
-      id: 1,
-      title: `Best ${formattedTopic} techniques for beginners`,
-      author: "MartialArtist42",
-      authorAvatar: "/placeholder.svg?height=40&width=40",
-      date: "2 hours ago",
-      replies: 24,
-      views: 156,
-      likes: 18,
-      excerpt: `I've been practicing ${formattedTopic} for about 3 months now and I'm looking for advice on the most effective techniques to focus on as a beginner...`,
-    },
-    {
-      id: 2,
-      title: `${formattedTopic} competition preparation tips`,
-      author: "BlackBelt2023",
-      authorAvatar: "/placeholder.svg?height=40&width=40",
-      date: "Yesterday",
-      replies: 31,
-      views: 203,
-      likes: 27,
-      excerpt:
-        "I have my first competition coming up in a month. What should I focus on in my training? Any advice on preparation, mindset, or strategy would be appreciated...",
-    },
-    {
-      id: 3,
-      title: `Recommended ${formattedTopic} schools in New York`,
-      author: "NYCFighter",
-      authorAvatar: "/placeholder.svg?height=40&width=40",
-      date: "3 days ago",
-      replies: 15,
-      views: 98,
-      likes: 7,
-      excerpt: `I recently moved to New York City and I'm looking for recommendations on good ${formattedTopic} schools. Preferably in Manhattan or Brooklyn...`,
-    },
-    {
-      id: 4,
-      title: `${formattedTopic} vs Traditional Karate - Differences and Similarities`,
-      author: "MartialHistorian",
-      authorAvatar: "/placeholder.svg?height=40&width=40",
-      date: "1 week ago",
-      replies: 42,
-      views: 312,
-      likes: 35,
-      excerpt:
-        "I've been studying martial arts history and I'm interested in the evolution of different styles. Can anyone with experience in both disciplines share insights on the key differences and similarities...",
-    },
-    {
-      id: 5,
-      title: `Dealing with injuries in ${formattedTopic}`,
-      author: "RecoveringFighter",
-      authorAvatar: "/placeholder.svg?height=40&width=40",
-      date: "1 week ago",
-      replies: 28,
-      views: 176,
-      likes: 22,
-      excerpt:
-        "I recently sprained my ankle during training. Looking for advice on recovery, rehabilitation exercises, and when it's safe to return to full training...",
-    },
-  ]
+  const { isSignedIn } = useUser()
+  const formattedTopic = params.topic.replace(/-/g, ' ')
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+  
+  const topics = useQuery(api.topics.list) || []
+  const [topicId, setTopicId] = useState<string | null>(null)
+  
+  // Find the topic ID based on the URL parameter
+  useEffect(() => {
+    const matchingTopic = topics.find(t => 
+      t.name.toLowerCase().replace(/\s+/g, '-') === params.topic
+    )
+    if (matchingTopic) {
+      setTopicId(matchingTopic._id)
+    }
+  }, [topics, params.topic])
+  
+  // Fetch threads for this topic
+  const threads = useQuery(
+    api.threads.list, 
+    topicId ? { topicId: topicId as Id<"topics"> } : "skip"
+  ) || [];
+  
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-3xl font-bold">{formattedTopic} Discussions</h1>
-          <p className="text-muted-foreground">
-            Join the conversation about {formattedTopic} techniques, training, and more.
-          </p>
+          <p className="text-muted-foreground">Join the conversation about {formattedTopic} techniques, training, and more.</p>
         </div>
         <Link href={`/topics/${params.topic}/new`}>
           <Button>New Thread</Button>
@@ -88,47 +52,68 @@ export default function TopicPage({ params }: { params: { topic: string } }) {
       </div>
 
       <div className="space-y-4">
-        {threads.map((thread) => (
-          <Link key={thread.id} href={`/topics/${params.topic}/${thread.id}`}>
-            <Card className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <CardTitle className="text-xl">{thread.title}</CardTitle>
-                <CardDescription>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Avatar className="h-6 w-6">
-                      <AvatarImage src={thread.authorAvatar} alt={thread.author} />
-                      <AvatarFallback>{thread.author.substring(0, 2)}</AvatarFallback>
-                    </Avatar>
-                    <span>{thread.author}</span>
-                    <span>•</span>
-                    <span>{thread.date}</span>
+        {threads.length === 0 ? (
+          <Card>
+            <CardContent className="py-8">
+              <div className="text-center">
+                <h3 className="text-lg font-medium">No threads yet</h3>
+                <p className="text-muted-foreground mt-2">Be the first to start a discussion about {formattedTopic}</p>
+                {isSignedIn ? (
+                  <Button className="mt-4" asChild>
+                    <Link href={`/topics/${params.topic}/new`}>Create Thread</Link>
+                  </Button>
+                ) : (
+                  <Button className="mt-4" asChild>
+                    <Link href="/auth/login">Sign In to Create Thread</Link>
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          threads.map((thread) => (
+            <Link key={thread._id} href={`/topics/${params.topic}/${thread._id}`}>
+              <Card className="hover:shadow-md transition-shadow">
+                <CardHeader>
+                  <CardTitle className="text-xl">{thread.title}</CardTitle>
+                  <CardDescription>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage src={thread.authorImageUrl || "/placeholder.svg?height=40&width=40"} alt={thread.authorName} />
+                        <AvatarFallback>{thread.authorName.substring(0, 2)}</AvatarFallback>
+                      </Avatar>
+                      <span>{thread.authorName}</span>
+                      <span>•</span>
+                      <span>{formatDistanceToNow(new Date(thread.createdAt))} ago</span>
+                    </div>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="line-clamp-2 text-muted-foreground">
+                    {thread.content.replace(/<[^>]*>/g, '')}
+                  </p>
+                </CardContent>
+                <CardFooter>
+                  <div className="flex gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <MessageSquare className="h-4 w-4" />
+                      <span>{thread.replyCount} replies</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Eye className="h-4 w-4" />
+                      <span>{thread.views} views</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <ThumbsUp className="h-4 w-4" />
+                      <span>{thread.likes} likes</span>
+                    </div>
                   </div>
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="line-clamp-2 text-muted-foreground">{thread.excerpt}</p>
-              </CardContent>
-              <CardFooter>
-                <div className="flex gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <MessageSquare className="h-4 w-4" />
-                    <span>{thread.replies} replies</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Eye className="h-4 w-4" />
-                    <span>{thread.views} views</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <ThumbsUp className="h-4 w-4" />
-                    <span>{thread.likes} likes</span>
-                  </div>
-                </div>
-              </CardFooter>
-            </Card>
-          </Link>
-        ))}
+                </CardFooter>
+              </Card>
+            </Link>
+          ))
+        )}
       </div>
     </div>
   )
 }
-

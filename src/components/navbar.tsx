@@ -13,27 +13,22 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu, Search, Shield, TrendingUp, Dumbbell, Moon, Sun } from "lucide-react"
+import { Menu, Search, Shield, Users, MessageSquare, TrendingUp, Dumbbell, Moon, Sun } from 'lucide-react'
 import { useTheme } from "next-themes"
+import { UserButton, SignInButton, SignUpButton, useUser } from "@clerk/nextjs"
 
 export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const { setTheme, theme } = useTheme()
-
-  // This would come from auth state in a real app
-  const isLoggedIn = false
-
+  const { isSignedIn, user } = useUser()
+  
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <Sheet>
           <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden"
-            >
+            <Button variant="ghost" className="mr-2 px-0 text-base hover:bg-transparent focus-visible:bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 md:hidden">
               <Menu className="h-5 w-5" />
               <span className="sr-only">Toggle Menu</span>
             </Button>
@@ -63,7 +58,7 @@ export default function Navbar() {
               </Link>
             </nav>
             <div className="mt-4 border-t px-7 pt-4">
-              {isLoggedIn ? (
+              {isSignedIn ? (
                 <div className="flex flex-col gap-4">
                   <Link href="/profile" className="flex items-center text-sm font-medium">
                     Profile
@@ -71,18 +66,15 @@ export default function Navbar() {
                   <Link href="/settings" className="flex items-center text-sm font-medium">
                     Settings
                   </Link>
-                  <Button variant="outline" className="w-full">
-                    Log Out
-                  </Button>
                 </div>
               ) : (
                 <div className="flex flex-col gap-2">
-                  <Button asChild className="w-full">
-                    <Link href="/auth/login">Log In</Link>
-                  </Button>
-                  <Button asChild variant="outline" className="w-full">
-                    <Link href="/auth/signup">Sign Up</Link>
-                  </Button>
+                  <SignInButton mode="modal">
+                    <Button className="w-full">Log In</Button>
+                  </SignInButton>
+                  <SignUpButton mode="modal">
+                    <Button variant="outline" className="w-full">Sign Up</Button>
+                  </SignUpButton>
                 </div>
               )}
             </div>
@@ -96,7 +88,9 @@ export default function Navbar() {
           <NavigationMenuList>
             <NavigationMenuItem>
               <Link href="/" legacyBehavior passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>Home</NavigationMenuLink>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Home
+                </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
@@ -110,7 +104,11 @@ export default function Navbar() {
                     { name: "Taekwondo", icon: <Shield className="h-4 w-4" /> },
                   ].map((topic) => (
                     <li key={topic.name}>
-                      <Link href={`/topics/${topic.name.toLowerCase().replace(/\s+/g, "-")}`} legacyBehavior passHref>
+                      <Link
+                        href={`/topics/${topic.name.toLowerCase().replace(/\s+/g, '-')}`}
+                        legacyBehavior
+                        passHref
+                      >
                         <NavigationMenuLink className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
                           <div className="flex items-center gap-2">
                             {topic.icon}
@@ -132,12 +130,16 @@ export default function Navbar() {
             </NavigationMenuItem>
             <NavigationMenuItem>
               <Link href="/members" legacyBehavior passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>Members</NavigationMenuLink>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Members
+                </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
               <Link href="/about" legacyBehavior passHref>
-                <NavigationMenuLink className={navigationMenuTriggerStyle()}>About</NavigationMenuLink>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  About
+                </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
           </NavigationMenuList>
@@ -156,30 +158,43 @@ export default function Navbar() {
                 />
               </div>
             ) : (
-              <Button variant="ghost" size="icon" className="mr-1" onClick={() => setIsSearchOpen(true)}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="mr-1"
+                onClick={() => setIsSearchOpen(true)}
+              >
                 <Search className="h-5 w-5" />
                 <span className="sr-only">Search</span>
               </Button>
             )}
           </div>
-          <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
             <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
           </Button>
-          {isLoggedIn ? (
-            <Avatar>
-              <AvatarImage src="/placeholder.svg?height=32&width=32" alt="@user" />
-              <AvatarFallback>U</AvatarFallback>
-            </Avatar>
+          {isSignedIn ? (
+            <UserButton 
+              afterSignOutUrl="/"
+              appearance={{
+                elements: {
+                  userButtonAvatarBox: "h-8 w-8"
+                }
+              }}
+            />
           ) : (
             <div className="hidden md:flex md:gap-2">
-              <Button asChild variant="ghost" size="sm">
-                <Link href="/auth/login">Log In</Link>
-              </Button>
-              <Button asChild size="sm">
-                <Link href="/auth/signup">Sign Up</Link>
-              </Button>
+              <SignInButton mode="modal">
+                <Button variant="ghost" size="sm">Log In</Button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <Button size="sm">Sign Up</Button>
+              </SignUpButton>
             </div>
           )}
         </div>
@@ -187,4 +202,3 @@ export default function Navbar() {
     </header>
   )
 }
-
