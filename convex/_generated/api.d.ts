@@ -16,6 +16,7 @@ import type {
 import type * as auth from "../auth.js";
 import type * as clerk from "../clerk.js";
 import type * as ConvexClientProvider from "../ConvexClientProvider.js";
+import type * as notifications from "../notifications.js";
 import type * as replies from "../replies.js";
 import type * as seed from "../seed.js";
 import type * as threads from "../threads.js";
@@ -34,6 +35,7 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   clerk: typeof clerk;
   ConvexClientProvider: typeof ConvexClientProvider;
+  notifications: typeof notifications;
   replies: typeof replies;
   seed: typeof seed;
   threads: typeof threads;

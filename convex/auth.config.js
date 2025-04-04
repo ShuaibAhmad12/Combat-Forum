@@ -1,7 +1,7 @@
 export default {
     providers: [
       {
-        domain: 'https://charming-garfish-72.clerk.accounts.dev',
+        domain: 'https://wanted-bluebird-59.clerk.accounts.dev',
         applicationID: 'convex',
       },
     ],

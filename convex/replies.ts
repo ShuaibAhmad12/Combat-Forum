@@ -19,9 +19,7 @@ export const list = query({
   handler: async (ctx, args) => {
     return await ctx.db
       .query("replies")
-      .filter((q) => 
-        q.eq(q.field("threadId"), args.threadId)
-      )
+      .filter((q) => q.eq(q.field("threadId"), args.threadId))
       .order("asc")
       .collect() as Reply[];
   },
@@ -54,6 +52,20 @@ export const create = mutation({
         replyCount: thread.replyCount + 1,
         updatedAt: Date.now(),
       });
+
+      // Notify thread owner
+      if (thread.authorId !== args.authorId) {
+        await ctx.db.insert("notifications", {
+          userId: thread.authorId,
+          type: "reply",
+          threadId: args.threadId,
+          fromUserId: args.authorId,
+          fromUserName: args.authorName,
+          message: `${args.authorName} replied to your thread "${thread.title}"`,
+          createdAt: Date.now(),
+          isRead: false,
+        });
+      }
 
       // Update the topic's last post time
       const topic = await ctx.db.get(thread.topicId);
