@@ -31,7 +31,7 @@ const instructors: Instructor[] = [
     bio: "Pawan Singh Kathait has been practicing martial arts for over 30 years. He specializes in traditional Kung Fu and has trained champions across the world.",
     experience: 30,
     specialties: ["Kung Fu", "Tai Chi", "Self Defense"],
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/images/pexels-football-wife-577822-1618042.jpg",
   },
   {
     id: 2,
@@ -40,7 +40,7 @@ const instructors: Instructor[] = [
     bio: "Mohd Shuaib is a 3-time national BJJ champion with a passion for teaching. She focuses on technique and practical application.",
     experience: 20,
     specialties: ["Brazilian Jiu-Jitsu", "MMA", "Grappling"],
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/images/pexels-olly-3785104.jpg",
   },
   {
     id: 3,
@@ -49,7 +49,7 @@ const instructors: Instructor[] = [
     bio: "Shivam Dhiman holds a 5th-degree black belt in Shotokan Karate and has been teaching for over a decade. He emphasizes discipline and form.",
     experience: 15,
     specialties: ["Karate", "Kata", "Competition"],
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/images/pexels-casnafu-31438318.jpg",
   },
   {
     id: 4,
@@ -58,7 +58,7 @@ const instructors: Instructor[] = [
     bio: "Sarah Khan is a former professional Muay Thai fighter with multiple international titles. She brings real-world experience to her teaching.",
     experience: 12,
     specialties: ["Muay Thai", "Kickboxing", "Conditioning"],
-    image: "/placeholder.svg?height=400&width=400",
+    image: "/images/pexels-roseleon-3225889.jpg",
   },
 ]
 
@@ -151,7 +151,7 @@ export default function AboutPage() {
           <div className="md:w-1/2 grid grid-cols-2 gap-4">
             <div className="rounded-lg overflow-hidden h-64 transform translate-y-8">
               <Image
-                src="/placeholder.svg?height=400&width=300"
+                src={"/images/pexels-sidesimagery-2600493.jpg"}
                 alt="Historical dojo photo"
                 width={300}
                 height={400}
@@ -160,7 +160,7 @@ export default function AboutPage() {
             </div>
             <div className="rounded-lg overflow-hidden h-64">
               <Image
-                src="/placeholder.svg?height=400&width=300"
+                src={"/images/pexels-brunogobofoto-2204179.jpg"}
                 alt="Training session"
                 width={300}
                 height={400}
@@ -169,16 +169,16 @@ export default function AboutPage() {
             </div>
             <div className="rounded-lg overflow-hidden h-64">
               <Image
-                src="/placeholder.svg?height=400&width=300"
+                src={"/images/pexels-brunogobofoto-5424660.jpg"}
                 alt="Competition team"
                 width={300}
                 height={400}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover "
               />
             </div>
             <div className="rounded-lg overflow-hidden h-64 transform translate-y--8">
               <Image
-                src="/placeholder.svg?height=400&width=300"
+                src={"/images/pexels-coco-championship-191448-598682.jpg"}
                 alt="Modern dojo"
                 width={300}
                 height={400}
@@ -248,7 +248,7 @@ export default function AboutPage() {
                 >
                   <div className="aspect-square relative">
                     <Image
-                      src={instructor.image || "/placeholder.svg"}
+                      src={instructor.image }
                       alt={instructor.name}
                       fill
                       className="object-cover"
@@ -277,7 +277,7 @@ export default function AboutPage() {
                   <div className="md:w-1/4 flex-shrink-0">
                     <div className="rounded-lg overflow-hidden">
                       <Image
-                        src={instructor.image || "/placeholder.svg"}
+                        src={instructor.image}
                         alt={instructor.name}
                         width={300}
                         height={300}
