@@ -20,6 +20,8 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id } from "../../convex/_generated/dataModel"; // ✅ Import Convex ID type
 import { Input } from "@/components/ui/input"
+
+
 export default function Navbar() {
   const { setTheme, theme } = useTheme();
   const { isSignedIn, user } = useUser();
@@ -47,6 +49,8 @@ export default function Navbar() {
       prev.map((n) => (n._id === notifId ? { ...n, isRead: true } : n))
     );
   };
+
+  const isAdmin = user?.publicMetadata?.role === "admin"
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -81,6 +85,20 @@ export default function Navbar() {
               <Link href="/about" className="flex items-center text-sm font-medium">
                 About
               </Link>
+              <Link
+                href="/blog"
+                className="flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+              >
+                Blog
+              </Link>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="flex items-center text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+                >
+                  Admin
+                </Link>
+              )}
             </nav>
             <div className="mt-4 border-t px-7 pt-4">
               {isSignedIn ? (
@@ -166,6 +184,22 @@ export default function Navbar() {
                   About
                 </NavigationMenuLink>
               </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link href="/blog" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Blog
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+            {isAdmin && (
+              <Link href="/admin" legacyBehavior passHref>
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Admin
+                </NavigationMenuLink>
+              </Link>
+               )}
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
