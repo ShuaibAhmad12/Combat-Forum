@@ -66,4 +66,46 @@ export default defineSchema({
     createdAt: v.number(),
     isRead: v.optional(v.boolean()),
   }).index("by_user", ["userId"]),
+
+  posts: defineTable({
+    title: v.string(),
+    description: v.string(),
+    content: v.string(),
+    category: v.string(),
+    slug: v.string(),
+    authorId: v.string(),
+    authorName: v.string(),
+    authorImageUrl: v.optional(v.string()),
+    published: v.boolean(),
+    likeCount: v.number(),
+    commentCount: v.number(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_author", ["authorId"]),
+
+  comments: defineTable({
+    postId: v.id("posts"),
+    parentId: v.optional(v.id("comments")),
+    content: v.string(),
+    authorId: v.string(),
+    authorName: v.string(),
+    authorImageUrl: v.optional(v.string()),
+    likeCount: v.number(),
+    createdAt: v.number(),
+  })
+    .index("by_post", ["postId"])
+    .index("by_parent", ["parentId"]),
+
+  like: defineTable({
+    postId: v.optional(v.id("posts")),
+    commentId: v.optional(v.id("comments")),
+    userId: v.string(),
+    createdAt: v.number(),
+  })
+    .index("by_post_user", ["postId", "userId"])
+    .index("by_comment_user", ["commentId", "userId"])
+    .index("by_user", ["userId"]),
+
 });
