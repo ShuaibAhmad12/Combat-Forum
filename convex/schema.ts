@@ -81,6 +81,7 @@ export default defineSchema({
     commentCount: v.number(),
     createdAt: v.number(),
     updatedAt: v.number(),
+    imageId: v.optional(v.id("_storage")),
   })
     .index("by_slug", ["slug"])
     .index("by_author", ["authorId"]),

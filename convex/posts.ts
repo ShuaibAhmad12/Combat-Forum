@@ -3,9 +3,45 @@ import { v } from "convex/values"
 
 export const getAll = query({
   handler: async (ctx) => {
-    return await ctx.db.query("posts").order("desc").collect()
+    const posts = await ctx.db.query("posts").order("desc").collect();
+    
+    // Get the deployment URL for HTTP actions
+    const deploymentUrl = process.env.CONVEX_SITE_URL || "https://your-deployment.convex.site";
+    
+    // Map over posts to add image URLs
+    return posts.map((post) => {
+      let imageUrl = null;
+      if (post.imageId) {
+        // Format the URL to include the file extension
+        imageUrl = `${deploymentUrl}/getImage/${post.imageId}/image.jpg`;
+      }
+      
+      return {
+        ...post,
+        imageUrl
+      };
+    });
   },
-})
+});
+
+
+export const getPostsWithImageUrls = query({
+  handler: async (ctx) => {
+    const posts = await ctx.db.query("posts").collect();
+    
+    return Promise.all(posts.map(async (post) => {
+      let imageUrl = null;
+      if (post.imageId) {
+        imageUrl = await ctx.storage.getUrl(post.imageId);
+      }
+      
+      return {
+        ...post,
+        imageUrl
+      };
+    }));
+  },
+});
 
 export const getBySlug = query({
   args: { slug: v.string() },
@@ -30,6 +66,7 @@ export const create = mutation({
     authorId: v.string(),
     authorName: v.string(),
     authorImageUrl: v.optional(v.string()),
+    imageId: v.optional(v.id("_storage")),
   },
   handler: async (ctx, args) => {
     const slug = args.title

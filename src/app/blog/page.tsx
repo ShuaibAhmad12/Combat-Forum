@@ -93,7 +93,28 @@ function BlogPostCard({ post }: { post: any }) {
   return (
     <Card className="overflow-hidden flex flex-col">
       <div className="relative h-48">
-        <Image src="/placeholder.svg?height=200&width=400" alt={post.title} fill className="object-cover" />
+        {post.imageUrl ? (
+          <Image 
+            src={post.imageUrl} 
+            alt={post.title} 
+            fill 
+            className="object-cover" 
+          />
+        ) : post.imageId ? (
+          <Image 
+            src={`${process.env.NEXT_PUBLIC_CONVEX_SITE_URL}/getImage/${post.imageId}/image.jpg`}
+            alt={post.title} 
+            fill 
+            className="object-cover" 
+          />
+        ) : (
+          <Image 
+            src="/placeholder.svg?height=200&width=400" 
+            alt={post.title} 
+            fill 
+            className="object-cover" 
+          />
+        )}
         <div className="absolute top-2 left-2 bg-primary text-primary-foreground px-2 py-1 text-xs font-medium rounded">
           {post.category}
         </div>
