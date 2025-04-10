@@ -14,13 +14,13 @@ import { formatDistanceToNow } from "date-fns/formatDistanceToNow"
 import { useEffect, useState } from "react"
 import ModerationControls from "@/components/moderation-controls"
 import type { Id } from "../../../../../convex/_generated/dataModel"
-import { useToast } from "../../../../components/ui/use-toast"
+import { toast } from "sonner"
+
 
 export default function ThreadPage() {
   const router = useRouter()
   const pathname = usePathname()
   const pathParts = pathname.split("/").filter(Boolean)
-  const { toast } = useToast()
 
   const threadId = pathParts[pathParts.length - 1] // Extract thread ID from URL
   const topicSlug = pathParts[pathParts.length - 2] // Extract topic slug
@@ -72,11 +72,7 @@ export default function ThreadPage() {
   // Handle like button click
   const handleLike = async () => {
     if (!isSignedIn || !user?.id || !foundThread) {
-      toast({
-        title: "Sign in required",
-        description: "Please sign in to like threads",
-        variant: "destructive",
-      });
+      toast("Please sign in to like threads");
       return;
     }
   
@@ -104,10 +100,7 @@ export default function ThreadPage() {
     const url = window.location.href
     navigator.clipboard.writeText(url).then(() => {
       setIsShared(true)
-      toast({
-        title: "Link copied!",
-        description: "Thread link has been copied to clipboard",
-      })
+      toast("Thread link has been copied to clipboard")
       setTimeout(() => {
         setIsShared(false)
       }, 2000)

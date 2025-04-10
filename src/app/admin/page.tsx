@@ -17,7 +17,8 @@ import Link from "next/link"
 import { useMutation, useQuery } from "convex/react"
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
-import { toast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -60,11 +61,7 @@ export default function AdminPage() {
   // Check if user is admin
   useEffect(() => {
     if (isLoaded && (!user || user.publicMetadata?.role !== "admin")) {
-      toast({
-        title: "Access denied",
-        description: "You don't have permission to access this page.",
-        variant: "destructive",
-      })
+      toast("You don't have permission to access this page.")
       router.push("/")
     }
   }, [isLoaded, user, router])
@@ -127,16 +124,9 @@ export default function AdminPage() {
       setFormData({ title: "", description: "", content: "", category: "" })
       setIsCreating(false)
 
-      toast({
-        title: "Success",
-        description: "Post created successfully.",
-      })
+      toast("Post created successfully.")
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to create post. Please try again.",
-        variant: "destructive",
-      })
+      toast("Failed to create post. Please try again.")
       console.error("Error creating post:", error)
     } finally {
       setIsSubmitting(false)
@@ -160,16 +150,9 @@ export default function AdminPage() {
       setFormData({ title: "", description: "", content: "", category: "" })
       setEditingPost(null)
 
-      toast({
-        title: "Success",
-        description: "Post updated successfully.",
-      })
+      toast("Post updated successfully.")
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update post. Please try again.",
-        variant: "destructive",
-      })
+      toast("Failed to update post. Please try again.")
       console.error("Error updating post:", error)
     } finally {
       setIsSubmitting(false)
@@ -184,16 +167,9 @@ export default function AdminPage() {
 
       setDeletePostId(null)
 
-      toast({
-        title: "Success",
-        description: "Post deleted successfully.",
-      })
+      toast( "Post deleted successfully.")
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to delete post. Please try again.",
-        variant: "destructive",
-      })
+      toast("Failed to delete post. Please try again.")
       console.error("Error deleting post:", error)
     }
   }

@@ -13,7 +13,7 @@ import Image from "next/image"
 import { useMutation, useQuery } from "convex/react"
 import { api } from "../../../../convex/_generated/api"
 import type { Id } from "../../../../convex/_generated/dataModel"
-import { toast } from "@/components/ui/use-toast"
+import { toast } from "sonner"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useParams } from "next/navigation"
@@ -92,16 +92,9 @@ export default function BlogPostPage() {
       })
 
       setCommentText("")
-      toast({
-        title: "Comment posted",
-        description: "Your comment has been posted successfully.",
-      })
+      toast("Your comment has been posted successfully.")
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to post comment. Please try again.",
-        variant: "destructive",
-      })
+      toast("Failed to post comment. Please try again.")
       console.error("Error posting comment:", error)
     }
   }
@@ -121,16 +114,9 @@ export default function BlogPostPage() {
 
       setReplyText("")
       setReplyingTo(null)
-      toast({
-        title: "Reply posted",
-        description: "Your reply has been posted successfully.",
-      })
+      toast("Your reply has been posted successfully.")
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to post reply. Please try again.",
-        variant: "destructive",
-      })
+      toast("Failed to post reply. Please try again.")
       console.error("Error posting reply:", error)
     }
   }
@@ -144,11 +130,7 @@ export default function BlogPostPage() {
         userId: user.id,
       })
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to like post. Please try again.",
-        variant: "destructive",
-      })
+      toast("Failed to like post. Please try again.")
       console.error("Error liking post:", error)
     }
   }
@@ -162,11 +144,7 @@ export default function BlogPostPage() {
         userId: user.id,
       })
     } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to like comment. Please try again.",
-        variant: "destructive",
-      })
+      toast("Failed to like comment. Please try again.")
       console.error("Error liking comment:", error)
     }
   }
@@ -176,10 +154,7 @@ export default function BlogPostPage() {
     await navigator.clipboard.writeText(url)
     setCopied(true)
 
-    toast({
-      title: "Link copied",
-      description: "The link has been copied to your clipboard.",
-    })
+    toast("The link has been copied to your clipboard.")
 
     setTimeout(() => setCopied(false), 2000)
   }
