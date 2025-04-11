@@ -9,6 +9,7 @@ import { useQuery } from "convex/react"
 import { api } from "../../../convex/_generated/api"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useState, useEffect } from "react"
+import { BlogContentPreview } from "../../components/blog-content-preview"
 
 export default function BlogPage() {
   const [isLoading, setIsLoading] = useState(true)
@@ -109,7 +110,8 @@ function BlogPostCard({ post }: { post: any }) {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="line-clamp-2">{post.description}</p>
+        {/* Replace the plain text paragraph with BlogContentPreview */}
+        <BlogContentPreview content={post.description} lineClamp={2} />
       </CardContent>
       <CardFooter className="flex justify-between mt-auto">
         <div className="flex items-center gap-4">
@@ -134,4 +136,3 @@ function BlogPostCard({ post }: { post: any }) {
     </Card>
   )
 }
-

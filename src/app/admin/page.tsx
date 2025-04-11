@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { PlusCircle, Pencil, Trash2, Eye, Loader2 } from "lucide-react"
@@ -18,6 +18,7 @@ import { useMutation, useQuery } from "convex/react"
 import { api } from "../../../convex/_generated/api"
 import type { Id } from "../../../convex/_generated/dataModel"
 import { toast } from "sonner"
+import { RichTextEditor } from "@/components/rich-text-editor"
 
 import {
   AlertDialog,
@@ -95,8 +96,17 @@ export default function AdminPage() {
     return !Object.values(errors).some((error) => error)
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+
+    // Clear error when user types
+    if (formErrors[name as keyof typeof formErrors]) {
+      setFormErrors((prev) => ({ ...prev, [name]: "" }))
+    }
+  }
+
+  const handleRichTextChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }))
 
     // Clear error when user types
@@ -167,7 +177,7 @@ export default function AdminPage() {
 
       setDeletePostId(null)
 
-      toast( "Post deleted successfully.")
+      toast("Post deleted successfully.")
     } catch (error) {
       toast("Failed to delete post. Please try again.")
       console.error("Error deleting post:", error)
@@ -253,28 +263,26 @@ export default function AdminPage() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="description">Description</Label>
-                      <Textarea
-                        id="description"
-                        name="description"
-                        value={formData.description}
-                        onChange={handleInputChange}
-                        placeholder="Enter a short description"
-                        rows={2}
-                        className={formErrors.description ? "border-red-500" : ""}
-                      />
+                      <div className={formErrors.description ? "border-red-500 rounded-md" : ""}>
+                        <RichTextEditor
+                          content={formData.description}
+                          onChange={(value) => handleRichTextChange("description", value)}
+                          placeholder="Enter a short description"
+                          minHeight="100px"
+                        />
+                      </div>
                       {formErrors.description && <p className="text-xs text-red-500">{formErrors.description}</p>}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="content">Content</Label>
-                      <Textarea
-                        id="content"
-                        name="content"
-                        value={formData.content}
-                        onChange={handleInputChange}
-                        placeholder="Enter post content"
-                        rows={10}
-                        className={formErrors.content ? "border-red-500" : ""}
-                      />
+                      <div className={formErrors.content ? "border-red-500 rounded-md" : ""}>
+                        <RichTextEditor
+                          content={formData.content}
+                          onChange={(value) => handleRichTextChange("content", value)}
+                          placeholder="Enter post content"
+                          minHeight="300px"
+                        />
+                      </div>
                       {formErrors.content && <p className="text-xs text-red-500">{formErrors.content}</p>}
                     </div>
                   </CardContent>
@@ -414,4 +422,3 @@ export default function AdminPage() {
     </div>
   )
 }
-
