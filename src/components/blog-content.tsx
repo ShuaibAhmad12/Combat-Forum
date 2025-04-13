@@ -16,5 +16,5 @@ export function BlogContent({ content, className = "" }: BlogContentProps) {
     }
   }, [content])
 
-  return <div ref={contentRef} className={`prose dark:prose-invert max-w-none ${className}`} />
+  return <div ref={contentRef} className={`prose dark:prose-invert max-w-none blog-content ${className}`} />
 }

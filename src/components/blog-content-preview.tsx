@@ -20,7 +20,7 @@ export function BlogContentPreview({ content, className = "", lineClamp = 2 }: B
   return (
     <div
       ref={contentRef}
-      className={`prose dark:prose-invert max-w-none ${className}`}
+      className={`prose dark:prose-invert max-w-none blog-content ${className}`}
       style={{
         display: "-webkit-box",
         WebkitLineClamp: lineClamp,
