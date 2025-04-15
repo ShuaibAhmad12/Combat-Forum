@@ -252,7 +252,7 @@ export default function BlogPostPage() {
         <article className="container max-w-3xl py-10">
           <div className="relative h-[300px] w-full mb-8">
             <Image
-              src="/placeholder.svg?height=300&width=800"
+              src={post?.imageUrl || "/placeholder.svg"}
               alt={post?.title || "Blog post"}
               fill
               className="object-cover rounded-lg"

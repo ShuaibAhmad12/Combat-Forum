@@ -46,16 +46,31 @@ export const getPostsWithImageUrls = query({
 export const getBySlug = query({
   args: { slug: v.string() },
   handler: async (ctx, args) => {
-    console.log("Fetching post with slug:", args.slug)
+    console.log("Fetching post with slug:", args.slug);
+
     const post = await ctx.db
       .query("posts")
       .withIndex("by_slug", (q) => q.eq("slug", args.slug))
-      .first()
+      .first();
 
-    console.log("Post found:", post)
-    return post
+    console.log("Post found:", post);
+
+    if (!post) return null;
+
+    const deploymentUrl = process.env.CONVEX_SITE_URL || "https://beloved-leopard-310.convex.site.convex.site";
+
+    let imageUrl = null;
+    if (post.imageId) {
+      imageUrl = `${deploymentUrl}/getImage/${post.imageId}/image.jpg`;
+    }
+
+    return {
+      ...post,
+      imageUrl,
+    };
   },
-})
+});
+
 
 export const create = mutation({
   args: {
