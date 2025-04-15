@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input"
 
 import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { PlusCircle, Pencil, Trash2, Eye, Loader2 } from "lucide-react"
+import { PlusCircle, Pencil, Trash2, Eye, Loader2, X } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
@@ -96,7 +96,13 @@ export default function AdminPage() {
     return !Object.values(errors).some((error) => error)
   }
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const generateUploadUrl = useMutation(api.upload.generateUploadUrl);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
 
@@ -105,6 +111,22 @@ export default function AdminPage() {
       setFormErrors((prev) => ({ ...prev, [name]: "" }))
     }
   }
+
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+
+      // Check if file is a jpg/jpeg
+      if (!file.type.includes('jpeg') && !file.type.includes('jpg')) {
+        toast("Please upload a JPG image");
+        return;
+      }
+
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
 
   const handleRichTextChange = (name: string, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }))
@@ -115,12 +137,31 @@ export default function AdminPage() {
     }
   }
 
+  // Update your handleCreatePost function
+  
   const handleCreatePost = async () => {
-    if (!validateForm() || !user) return
+    if (!validateForm() || !user) return;
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
+      let imageId = null;
+
+      // Upload image if one is selected
+      if (imageFile) {
+        const uploadUrl = await generateUploadUrl();
+
+        // Upload the file to the generated URL
+        const result = await fetch(uploadUrl, {
+          method: "POST",
+          headers: { "Content-Type": imageFile.type },
+          body: imageFile,
+        });
+
+        const { storageId } = await result.json();
+        imageId = storageId;
+      }
+
       await createPost({
         title: formData.title,
         description: formData.description,
@@ -129,19 +170,22 @@ export default function AdminPage() {
         authorId: user.id,
         authorName: `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username || "Admin",
         authorImageUrl: user.imageUrl,
-      })
+        imageId: imageId,
+      });
 
-      setFormData({ title: "", description: "", content: "", category: "" })
-      setIsCreating(false)
+      setFormData({ title: "", description: "", content: "", category: "" });
+      setImageFile(null);
+      setImagePreview(null);
+      setIsCreating(false);
 
-      toast("Post created successfully.")
+      toast("Post created successfully.");
     } catch (error) {
-      toast("Failed to create post. Please try again.")
-      console.error("Error creating post:", error)
+      toast("Failed to create post. Please try again.");
+      console.error("Error creating post:", error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleUpdatePost = async () => {
     if (!validateForm() || !editingPost) return
@@ -237,6 +281,37 @@ export default function AdminPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="image">Post Image (JPG only)</Label>
+                      <div className="flex items-center gap-4">
+                        <Input
+                          id="image"
+                          type="file"
+                          accept="image/jpeg,image/jpg"
+                          onChange={handleImageChange}
+                        />
+                        {imagePreview && (
+                          <div className="relative w-24 h-24">
+                            <img
+                              src={imagePreview}
+                              alt="Preview"
+                              className="w-full h-full object-cover rounded-md"
+                            />
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="absolute top-0 right-0 bg-black/50 rounded-full p-1"
+                              onClick={() => {
+                                setImageFile(null);
+                                setImagePreview(null);
+                              }}
+                            >
+                              <X className="h-4 w-4 text-white" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
                     <div className="space-y-2">
                       <Label htmlFor="title">Title</Label>
                       <Input
