@@ -342,8 +342,8 @@ export default function AdminPage() {
                         <RichTextEditor
                           content={formData.description}
                           onChange={(value) => handleRichTextChange("description", value)}
-                          placeholder="Enter a short description"
-                          minHeight="100px"
+                          // placeholder="Enter a short description"
+                          // minHeight="100px"
                         />
                       </div>
                       {formErrors.description && <p className="text-xs text-red-500">{formErrors.description}</p>}
@@ -354,12 +354,13 @@ export default function AdminPage() {
                         <RichTextEditor
                           content={formData.content}
                           onChange={(value) => handleRichTextChange("content", value)}
-                          placeholder="Enter post content"
-                          minHeight="300px"
+                          // placeholder="Enter post content"
+                          // minHeight="300px"
                         />
                       </div>
                       {formErrors.content && <p className="text-xs text-red-500">{formErrors.content}</p>}
                     </div>
+                    
                   </CardContent>
                   <CardFooter className="flex justify-between">
                     <Button

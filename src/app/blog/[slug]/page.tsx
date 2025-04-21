@@ -17,6 +17,7 @@ import { toast } from "sonner"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useParams } from "next/navigation"
+import { debugHtmlContent } from "@/lib/debug-content"
 
 export default function BlogPostPage() {
   const params = useParams()
@@ -159,6 +160,13 @@ export default function BlogPostPage() {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  useEffect(() => {
+    if (post?.content) {
+      console.log("Debugging post content:")
+      debugHtmlContent(post.content)
+    }
+  }, [post?.content])
+
   const shareOnSocialMedia = (platform: string) => {
     const url = encodeURIComponent(window.location.href)
     const title = encodeURIComponent(post?.title || "Check out this blog post")
@@ -289,7 +297,7 @@ export default function BlogPostPage() {
           </div>
 
           <div
-            className="prose dark:prose-invert max-w-none mb-8"
+            className="prose dark:prose-invert max-w-none mb-8 blog-post-content"
             dangerouslySetInnerHTML={{ __html: post?.content || "" }}
           />
 
@@ -548,4 +556,3 @@ function CommentCard({
     </div>
   )
 }
-

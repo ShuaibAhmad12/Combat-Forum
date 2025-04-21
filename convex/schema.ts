@@ -82,6 +82,7 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
     imageId: v.optional(v.id("_storage")),
+    
   })
     .index("by_slug", ["slug"])
     .index("by_author", ["authorId"]),
@@ -108,5 +109,17 @@ export default defineSchema({
     .index("by_post_user", ["postId", "userId"])
     .index("by_comment_user", ["commentId", "userId"])
     .index("by_user", ["userId"]),
+    
+    images: defineTable({
+      storageId: v.id("_storage"),
+      fileName: v.string(),
+      fileSize: v.number(),
+      fileType: v.string(),
+      width: v.optional(v.number()),
+      height: v.optional(v.number()),
+      altText: v.string(),
+      uploadedAt: v.number(),
+    }).index("by_storageId", ["storageId"]),
+  
 
 });
