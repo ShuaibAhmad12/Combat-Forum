@@ -161,7 +161,7 @@ export const getArchiveData = query({
 })
 
 // Get all unique categories
-export const getCategories = query({
+export const getCategories1 = query({
   handler: async (ctx) => {
     const posts = await ctx.db
       .query("posts")

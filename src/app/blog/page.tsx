@@ -41,7 +41,7 @@ export default function BlogPage() {
   const isMobile = useIsMobile()
 
   // Fetch all categories
-  const categories = useQuery(api.posts.getCategories) || []
+  const categories = useQuery(api.posts.getCategories1) || []
 
   // Fetch archive data
   const archiveData = useQuery(api.posts.getArchiveData) || { years: [], postsByYear: {} }
