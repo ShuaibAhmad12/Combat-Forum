@@ -125,7 +125,7 @@ export default function Navbar() {
         </Sheet>
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <Shield className="h-6 w-6" />
-          <span className="hidden font-bold sm:inline-block">Martial Arts Forum</span>
+          <span className="font-bold sm:inline-block">Martial Arts Forum</span>
         </Link>
         <NavigationMenu className="hidden md:flex">
           <NavigationMenuList>
