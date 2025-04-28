@@ -82,6 +82,8 @@ export default defineSchema({
     createdAt: v.number(),
     updatedAt: v.number(),
     imageId: v.optional(v.id("_storage")),
+    viewCount: v.optional(v.number()),
+    tags: v.optional(v.array(v.string())),
     
   })
     .index("by_slug", ["slug"])

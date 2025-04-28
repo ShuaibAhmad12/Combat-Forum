@@ -1,64 +1,9 @@
-/* Base editor styles */
-.editor-content {
-  overflow-y: auto;
-  min-height: 200px;
-}
-
-/* Ensure the editor content has proper styling */
-.editor-content .ProseMirror {
-  min-height: 100px;
-  padding: 0.75rem;
-  border-radius: 0.375rem;
-  border: 1px solid hsl(var(--input));
-  background-color: hsl(var(--background));
-}
-
-.editor-content .ProseMirror:focus {
-  outline: none;
-}
-
-/* Heading styles for the editor */
-.editor-content h1 {
-  font-size: 1.875rem; /* 30px */
-  font-weight: 700;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-.editor-content h2 {
-  font-size: 1.5rem; /* 24px */
-  font-weight: 600;
-  margin-top: 0.75rem;
-  margin-bottom: 0.25rem;
-}
-
-/* Paragraph styles */
-.editor-content p {
-  margin-bottom: 0.75rem;
-}
-
-/* Alignment styles */
-.editor-content .text-left {
-  text-align: left;
-}
-
-.editor-content .text-center {
-  text-align: center;
-}
-
-.editor-content .text-right {
-  text-align: right;
-}
-
-.editor-content .text-justify {
-  text-align: justify;
-}
 
 /* Image styles */
 .editor-content img {
-  max-width: 100%;
+  max-width: 10%;
   height: auto;
-  border-radius: 0.375rem;
-  margin: 1.5rem auto;
+  /* border-radius: 0.375rem; */
+  margin: 1rem ;
   display: block;
 }
