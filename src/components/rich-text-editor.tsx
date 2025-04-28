@@ -27,6 +27,7 @@ import { useRef, useState } from "react"
 import { useMutation } from "convex/react"
 import { api } from "../../convex/_generated/api"
 import ImageCropper from "./ImageCropper"
+import "../lib/editor.css"
 
 
 interface RichTextEditorProps {

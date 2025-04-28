@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Textarea } from "@/components/ui/textarea"
-import { ThumbsUp, MessageSquare, Share2, Reply, Check, Copy, Twitter, Facebook, Linkedin } from "lucide-react"
+import { ThumbsUp, MessageSquare, Share2, Reply, Check, Copy, Twitter, Facebook, Linkedin, Tag } from 'lucide-react'
 import { useUser } from "@clerk/nextjs"
 import { SignInButton } from "@clerk/nextjs"
 import { useState, useEffect } from "react"
@@ -18,6 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Skeleton } from "@/components/ui/skeleton"
 import { useParams } from "next/navigation"
 import { debugHtmlContent } from "@/lib/debug-content"
+import { SiteHeader } from "@/components/site-header"
 
 export default function BlogPostPage() {
   const params = useParams()
@@ -37,6 +38,14 @@ export default function BlogPostPage() {
 
   // Fetch post data
   const post = useQuery(api.posts.getBySlug, { slug })
+
+  // Record view when post is loaded
+  const recordView = useMutation(api.posts.recordView)
+  useEffect(() => {
+    if (post?._id) {
+      recordView({ postId: post._id }).catch(console.error)
+    }
+  }, [post?._id, recordView])
 
   // Debug post data
   useEffect(() => {
@@ -192,22 +201,32 @@ export default function BlogPostPage() {
   if (isLoading && !post && !error) {
     return (
       <div className="flex min-h-screen flex-col">
-        <main className="flex-1">
-          <div className="container max-w-3xl py-10">
-            <div className="space-y-4">
-              <Skeleton className="h-[300px] w-full rounded-lg" />
-              <Skeleton className="h-12 w-3/4" />
-              <div className="flex items-center gap-4">
-                <Skeleton className="h-12 w-12 rounded-full" />
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-4 w-24" />
+        <SiteHeader />
+        <main className="flex-1 flex justify-center">
+          <div className="container max-w-6xl py-10">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-4">
+                <Skeleton className="h-[300px] w-full rounded-lg" />
+                <Skeleton className="h-12 w-3/4" />
+                <div className="flex items-center gap-4">
+                  <Skeleton className="h-12 w-12 rounded-full" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
                 </div>
               </div>
-              <div className="space-y-4">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
+              <div className="lg:col-span-1">
+                <div className="space-y-6">
+                  <Skeleton className="h-[200px] w-full rounded-lg" />
+                  <Skeleton className="h-[150px] w-full rounded-lg" />
+                  <Skeleton className="h-[100px] w-full rounded-lg" />
+                </div>
               </div>
             </div>
           </div>
@@ -220,7 +239,8 @@ export default function BlogPostPage() {
   if (error) {
     return (
       <div className="flex min-h-screen flex-col">
-        <main className="flex-1">
+        <SiteHeader />
+        <main className="flex-1 flex justify-center">
           <div className="container max-w-3xl py-10">
             <div className="text-center py-10">
               <h2 className="text-2xl font-bold text-red-500 mb-4">Error Loading Post</h2>
@@ -239,7 +259,8 @@ export default function BlogPostPage() {
   if (!isLoading && !post) {
     return (
       <div className="flex min-h-screen flex-col">
-        <main className="flex-1">
+        <SiteHeader />
+        <main className="flex-1 flex justify-center">
           <div className="container max-w-3xl py-10">
             <div className="text-center py-10">
               <h2 className="text-2xl font-bold mb-4">Post Not Found</h2>
@@ -256,154 +277,170 @@ export default function BlogPostPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <main className="flex-1">
-        <article className="container max-w-3xl py-10">
-          <div className="relative h-[300px] w-full mb-8">
-            <Image
-              src={post?.imageUrl || "/placeholder.svg"}
-              alt={post?.title || "Blog post"}
-              fill
-              className="object-cover rounded-lg"
-            />
-            {post?.category && (
-              <div className="absolute top-4 left-4 bg-primary text-primary-foreground px-3 py-1 text-sm font-medium rounded">
-                {post.category}
-              </div>
-            )}
-          </div>
-
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">{post?.title}</h1>
-
-          <div className="flex items-center gap-4 mb-8">
-            <Avatar>
-              <AvatarImage
-                src={post?.authorImageUrl || "/placeholder.svg?height=40&width=40"}
-                alt={post?.authorName || "Author"}
-              />
-              <AvatarFallback>{post?.authorName?.charAt(0) || "A"}</AvatarFallback>
-            </Avatar>
-            <div>
-              <p className="font-medium">{post?.authorName}</p>
-              <p className="text-sm text-muted-foreground">
-                {post?.createdAt
-                  ? new Date(post.createdAt).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })
-                  : ""}
-              </p>
-            </div>
-          </div>
-
-          <div
-            className="prose dark:prose-invert max-w-none mb-8 blog-post-content"
-            dangerouslySetInnerHTML={{ __html: post?.content || "" }}
-          />
-
-          <div className="flex items-center gap-6 py-4 border-t border-b">
-            <Button
-              variant={hasLikedPost ? "default" : "ghost"}
-              size="sm"
-              onClick={handleLikePost}
-              className="flex items-center gap-2"
-              disabled={!isSignedIn}
-            >
-              <ThumbsUp className={`h-4 w-4 ${hasLikedPost ? "fill-current" : ""}`} />
-              <span>{post?.likeCount || 0}</span>
-            </Button>
-            <Button variant="ghost" size="sm" className="flex items-center gap-2">
-              <MessageSquare className="h-4 w-4" />
-              <span>{post?.commentCount || 0}</span>
-            </Button>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                  <Share2 className="h-4 w-4" />
-                  <span>Share</span>
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-56" align="start">
-                <div className="grid gap-4">
-                  <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" className="w-full justify-start" onClick={handleShare}>
-                      {copied ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
-                      Copy link
-                    </Button>
-                  </div>
-                  <div className="flex justify-between">
-                    <Button variant="outline" size="icon" onClick={() => shareOnSocialMedia("twitter")}>
-                      <Twitter className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="icon" onClick={() => shareOnSocialMedia("facebook")}>
-                      <Facebook className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="icon" onClick={() => shareOnSocialMedia("linkedin")}>
-                      <Linkedin className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          <div className="mt-10">
-            <h2 className="text-2xl font-bold mb-6">Comments ({post?.commentCount || 0})</h2>
-
-            {isSignedIn ? (
-              <div className="mb-8">
-                <Textarea
-                  placeholder="Add a comment..."
-                  value={commentText}
-                  onChange={(e) => setCommentText(e.target.value)}
-                  className="mb-2"
+      <main className="flex-1 flex justify-center">
+        <div className="container max-w-6xl py-10">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main content - takes up 2/3 of the space on large screens */}
+            <article className="lg:col-span-2">
+              <div className="relative h-[300px] w-full mb-8">
+                <Image
+                  src={post?.imageUrl || "/placeholder.svg?height=400&width=800"}
+                  alt={post?.title || "Blog post"}
+                  fill
+                  className="object-cover rounded-lg"
                 />
-                <Button onClick={handleCommentSubmit} disabled={!commentText.trim()}>
-                  Post Comment
-                </Button>
+                {post?.category && (
+                  <div className="absolute top-4 left-4 bg-primary text-primary-foreground px-3 py-1 text-sm font-medium rounded">
+                    {post.category}
+                  </div>
+                )}
               </div>
-            ) : (
-              <Card className="mb-8">
-                <CardContent className="pt-6 flex flex-col items-center gap-4">
-                  <p>Sign in to join the conversation</p>
-                  <SignInButton mode="modal">
-                    <Button>Sign In</Button>
-                  </SignInButton>
-                </CardContent>
-              </Card>
-            )}
 
-            {!comments ? (
-              <div className="space-y-6">
-                <Skeleton className="h-32 w-full" />
-                <Skeleton className="h-32 w-full" />
-              </div>
-            ) : comments.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">No comments yet. Be the first to comment!</div>
-            ) : (
-              <div className="space-y-6">
-                {topLevelComments.map((comment) => (
-                  <CommentCard
-                    key={comment._id}
-                    comment={comment}
-                    replies={commentReplies[comment._id] || []}
-                    isSignedIn={!!isSignedIn}
-                    userLikes={userLikes}
-                    onReply={(commentId) => {
-                      setReplyingTo(replyingTo === commentId ? null : commentId)
-                      setReplyText("")
-                    }}
-                    replyingTo={replyingTo}
-                    replyText={replyText}
-                    setReplyText={setReplyText}
-                    onSubmitReply={handleReplySubmit}
-                    onLike={handleLikeComment}
+              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl mb-4">{post?.title}</h1>
+
+              <div className="flex items-center gap-4 mb-8">
+                <Avatar>
+                  <AvatarImage
+                    src={post?.authorImageUrl || "/placeholder.svg?height=40&width=40"}
+                    alt={post?.authorName || "Author"}
                   />
-                ))}
+                  <AvatarFallback>{post?.authorName?.charAt(0) || "A"}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-medium">{post?.authorName}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {post?.createdAt
+                      ? new Date(post.createdAt).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })
+                      : ""}
+                  </p>
+                </div>
               </div>
-            )}
+
+              <div
+                className="prose dark:prose-invert max-w-none mb-8"
+                dangerouslySetInnerHTML={{ __html: post?.content || "" }}
+              />
+
+              <div className="flex items-center gap-6 py-4 border-t border-b">
+                <Button
+                  variant={hasLikedPost ? "default" : "ghost"}
+                  size="sm"
+                  onClick={handleLikePost}
+                  className="flex items-center gap-2"
+                  disabled={!isSignedIn}
+                >
+                  <ThumbsUp className={`h-4 w-4 ${hasLikedPost ? "fill-current" : ""}`} />
+                  <span>{post?.likeCount || 0}</span>
+                </Button>
+                <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                  <MessageSquare className="h-4 w-4" />
+                  <span>{post?.commentCount || 0}</span>
+                </Button>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                      <Share2 className="h-4 w-4" />
+                      <span>Share</span>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-56" align="start">
+                    <div className="grid gap-4">
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" className="w-full justify-start" onClick={handleShare}>
+                          {copied ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
+                          Copy link
+                        </Button>
+                      </div>
+                      <div className="flex justify-between">
+                        <Button variant="outline" size="icon" onClick={() => shareOnSocialMedia("twitter")}>
+                          <Twitter className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="icon" onClick={() => shareOnSocialMedia("facebook")}>
+                          <Facebook className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="icon" onClick={() => shareOnSocialMedia("linkedin")}>
+                          <Linkedin className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="mt-10">
+                <h2 className="text-2xl font-bold mb-6">Comments ({post?.commentCount || 0})</h2>
+
+                {isSignedIn ? (
+                  <div className="mb-8">
+                    <Textarea
+                      placeholder="Add a comment..."
+                      value={commentText}
+                      onChange={(e) => setCommentText(e.target.value)}
+                      className="mb-2"
+                    />
+                    <Button onClick={handleCommentSubmit} disabled={!commentText.trim()}>
+                      Post Comment
+                    </Button>
+                  </div>
+                ) : (
+                  <Card className="mb-8">
+                    <CardContent className="pt-6 flex flex-col items-center gap-4">
+                      <p>Sign in to join the conversation</p>
+                      <SignInButton mode="modal">
+                        <Button>Sign In</Button>
+                      </SignInButton>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {!comments ? (
+                  <div className="space-y-6">
+                    <Skeleton className="h-32 w-full" />
+                    <Skeleton className="h-32 w-full" />
+                  </div>
+                ) : comments.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No comments yet. Be the first to comment!
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    {topLevelComments.map((comment) => (
+                      <CommentCard
+                        key={comment._id}
+                        comment={comment}
+                        replies={commentReplies[comment._id] || []}
+                        isSignedIn={!!isSignedIn}
+                        userLikes={userLikes}
+                        onReply={(commentId) => {
+                          setReplyingTo(replyingTo === commentId ? null : commentId)
+                          setReplyText("")
+                        }}
+                        replyingTo={replyingTo}
+                        replyText={replyText}
+                        setReplyText={setReplyText}
+                        onSubmitReply={handleReplySubmit}
+                        onLike={handleLikeComment}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </article>
+
+            {/* Sidebar - takes up 1/3 of the space on large screens */}
+            <aside className="lg:col-span-1">
+              <div className="space-y-8">
+                <CategoriesSection />
+                <MostVisitedSection />
+                <TagsSection />
+              </div>
+            </aside>
           </div>
-        </article>
+        </div>
       </main>
     </div>
   )
@@ -553,6 +590,117 @@ function CommentCard({
           )}
         </CardContent>
       </Card>
+    </div>
+  )
+}
+
+function CategoriesSection() {
+  const categories = useQuery(api.posts.getCategories)
+
+  return (
+    <div className="border rounded-lg p-6">
+      <h3 className="text-xl font-bold mb-4">Categories</h3>
+
+      {!categories ? (
+        <div className="space-y-2">
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} className="h-6 w-full" />
+          ))}
+        </div>
+      ) : categories.length === 0 ? (
+        <p className="text-muted-foreground">No categories found.</p>
+      ) : (
+        <div className="space-y-2">
+          {categories.map((category) => (
+            <Link
+              key={category.name}
+              href={`/blog?category=${encodeURIComponent(category.name)}`}
+              className="flex justify-between items-center py-1 hover:text-primary transition-colors"
+            >
+              <span>{category.name}</span>
+              <span className="text-xs bg-muted px-2 py-1 rounded-full">{category.count}</span>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function MostVisitedSection() {
+  const mostVisited = useQuery(api.posts.getMostVisited, { limit: 5 })
+
+  return (
+    <div className="border rounded-lg p-6">
+      <h3 className="text-xl font-bold mb-4">Most Visited</h3>
+
+      {!mostVisited ? (
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="flex flex-col gap-2">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-3 w-2/3" />
+            </div>
+          ))}
+        </div>
+      ) : mostVisited.length === 0 ? (
+        <p className="text-muted-foreground">No posts found.</p>
+      ) : (
+        <div className="space-y-4">
+          {mostVisited.map((post) => (
+            <Link href={`/blog/${post.slug}`} key={post._id} className="block group">
+              <div className="space-y-1">
+                <h4 className="font-medium group-hover:text-primary transition-colors line-clamp-2">{post.title}</h4>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span>{post.category}</span>
+                  <span>•</span>
+                  <span>
+                    {new Date(post.createdAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function TagsSection() {
+  const tags = useQuery(api.posts.getTags)
+
+  return (
+    <div className="border rounded-lg p-6">
+      <h3 className="text-xl font-bold mb-4">Tags</h3>
+
+      {!tags ? (
+        <div className="flex flex-wrap gap-2">
+          {[...Array(8)].map((_, i) => (
+            <Skeleton key={i} className="h-8 w-16" />
+          ))}
+        </div>
+      ) : tags.length === 0 ? (
+        <p className="text-muted-foreground">No tags found.</p>
+      ) : (
+        <div className="flex flex-wrap gap-2">
+          {tags.map((tag) => (
+            <Link
+              key={tag.name}
+              href={`/blog?tag=${encodeURIComponent(tag.name)}`}
+              className="inline-flex items-center gap-1 bg-muted hover:bg-muted/80 px-3 py-1 rounded-full text-sm transition-colors"
+            >
+              <Tag className="h-3 w-3" />
+              <span>{tag.name}</span>
+              <span className="text-xs opacity-70">({tag.count})</span>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

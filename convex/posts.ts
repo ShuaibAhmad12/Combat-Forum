@@ -339,3 +339,80 @@ export const like = mutation({
     }
   },
 })
+
+
+export const getCategories = query({
+  handler: async (ctx) => {
+    // Get all posts
+    const posts = await ctx.db.query("posts").collect()
+
+    // Count posts by category
+    const categoryMap = new Map<string, number>()
+
+    for (const post of posts) {
+      if (post.category) {
+        const count = categoryMap.get(post.category) || 0
+        categoryMap.set(post.category, count + 1)
+      }
+    }
+
+    // Convert to array of objects
+    return Array.from(categoryMap.entries())
+      .map(([name, count]) => ({
+        name,
+        count,
+      }))
+      .sort((a, b) => b.count - a.count) // Sort by count descending
+  },
+})
+
+export const getMostVisited = query({
+  args: { limit: v.number() },
+  handler: async (ctx, args) => {
+    return await ctx.db.query("posts").order("desc").take(args.limit)
+  },
+})
+
+export const recordView = mutation({
+  args: { postId: v.id("posts") },
+  handler: async (ctx, args) => {
+    const post = await ctx.db.get(args.postId)
+    if (!post) {
+      throw new Error("Post not found")
+    }
+
+    // Increment view count
+    return await ctx.db.patch(args.postId, {
+      viewCount: (post.viewCount || 0) + 1,
+    })
+  },
+})
+
+export const getTags = query({
+  handler: async (ctx) => {
+    // Get all posts
+    const posts = await ctx.db.query("posts").collect()
+
+    // Count posts by tag
+    const tagMap = new Map<string, number>()
+
+    for (const post of posts) {
+      if (post.tags && Array.isArray(post.tags)) {
+        for (const tag of post.tags) {
+          const count = tagMap.get(tag) || 0
+          tagMap.set(tag, count + 1)
+        }
+      }
+    }
+
+    // Convert to array of objects
+    return Array.from(tagMap.entries())
+      .map(([name, count]) => ({
+        name,
+        count,
+      }))
+      .sort((a, b) => b.count - a.count) // Sort by count descending
+  },
+})
+
+
