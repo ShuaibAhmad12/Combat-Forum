@@ -31,6 +31,7 @@ export const getFiltered = query({
     category: v.optional(v.string()),
     sortBy: v.optional(v.string()),
     dateFrom: v.optional(v.number()),
+    year: v.optional(v.string()), // Add year parameter
   },
   handler: async (ctx, args) => {
     // Start with a base query for published posts
@@ -41,12 +42,10 @@ export const getFiltered = query({
       postsQuery = postsQuery.filter((q) => q.eq(q.field("category"), args.category))
     }
 
-    // Apply date filter
     // Apply date filter - only if dateFrom is defined
-if (args.dateFrom !== undefined) {
-  // Now TypeScript knows dateFrom is a number, not undefined
-  postsQuery = postsQuery.filter((q) => q.gte(q.field("createdAt"), args.dateFrom as number))
-}
+    if (args.dateFrom !== undefined) {
+      postsQuery = postsQuery.filter((q) => q.gte(q.field("createdAt"), args.dateFrom as number))
+    }
 
     // Collect all posts first (we'll sort them manually for some cases)
     const posts = await postsQuery.collect()
@@ -79,6 +78,15 @@ if (args.dateFrom !== undefined) {
       )
     }
 
+    // Apply year filter if provided
+    if (args.year) {
+      filteredPosts = filteredPosts.filter((post) => {
+        const postDate = new Date(post.createdAt)
+        const postYear = postDate.getFullYear().toString()
+        return postYear === args.year
+      })
+    }
+
     // Apply sorting
     if (args.sortBy === "oldest") {
       // Sort by creation date (oldest first)
@@ -98,6 +106,59 @@ if (args.dateFrom !== undefined) {
   },
 })
 
+// New query to get archive data
+export const getArchiveData = query({
+  handler: async (ctx) => {
+    // Get all published posts
+    const posts = await ctx.db
+      .query("posts")
+      .filter((q) => q.eq(q.field("published"), true))
+      .collect()
+
+    // Group posts by year
+    const postsByYear: Record<string, any[]> = {}
+    const years = new Set<string>()
+
+    posts.forEach((post) => {
+      const postDate = new Date(post.createdAt)
+      const year = postDate.getFullYear().toString()
+
+      // Add year to set of years
+      years.add(year)
+
+      // Initialize array for year if it doesn't exist
+      if (!postsByYear[year]) {
+        postsByYear[year] = []
+      }
+
+      // Add post to year
+      postsByYear[year].push({
+        date: postDate.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        }),
+        title: post.title,
+        slug: post.slug,
+      })
+    })
+
+    // Sort posts within each year by date (newest first)
+    Object.keys(postsByYear).forEach((year) => {
+      postsByYear[year].sort((a, b) => {
+        return new Date(b.date).getTime() - new Date(a.date).getTime()
+      })
+    })
+
+    // Convert set to array and sort years in descending order
+    const sortedYears = Array.from(years).sort((a, b) => Number.parseInt(b) - Number.parseInt(a))
+
+    return {
+      years: sortedYears,
+      postsByYear,
+    }
+  },
+})
 
 // Get all unique categories
 export const getCategories = query({
